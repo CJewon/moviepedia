@@ -7,11 +7,11 @@ const LIMIT = 6;
 
 export default function App() {
   const [order, setOrder] = useState("createdAt");
-  const [items, setItems] = useState([]);
   const [offset, setOffset] = useState(0);
   const [hasNext, setHasNext] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingError, setLoadingError] = useState(null);
+  const [items, setItems] = useState([]);
 
   const sortedItems = items.sort((a, b) => b[order] - a[order]);
 
@@ -45,8 +45,12 @@ export default function App() {
     setHasNext(paging.hasNext);
   };
 
-  const handleLoadMore = () => {
-    handleLoad({ order, offset, limit: LIMIT });
+  const handleLoadMore = async () => {
+    await handleLoad({ order, offset, limit: LIMIT });
+  };
+
+  const handleSubmitSuccess = (review) => {
+    setItems((prevItems) => [review, ...prevItems]);
   };
 
   useEffect(() => {
@@ -59,7 +63,7 @@ export default function App() {
         <button onClick={handleNewestClick}>최신순</button>
         <button onClick={handleBestClick}>베스트순</button>
       </div>
-      <ReviewForm></ReviewForm>
+      <ReviewForm onSubmitSuccess={handleSubmitSuccess}></ReviewForm>
       <ReviewList items={sortedItems} onDelete={handleDelete}></ReviewList>
       {hasNext && (
         <button disabled={isLoading} onClick={handleLoadMore}>
