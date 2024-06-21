@@ -1,14 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import "./ReviewList.css";
 import Rating from "./Rating";
+import ReviewForm from "./ReviewForm";
 
 function formatDate(value) {
   const date = new Date(value);
   return `${date.getFullYear()}. ${date.getMonth() + 1}. ${date.getDate()}`;
 }
 
-function ReviewListItem({ item, onDelete }) {
+function ReviewListItem({ item, onDelete, onEdit }) {
   const handleDeleteClick = () => onDelete(item.id);
+
+  const handleEditClick = () => {
+    onEdit(item.id);
+  };
 
   return (
     <div className="ReviewListItem">
@@ -18,6 +23,7 @@ function ReviewListItem({ item, onDelete }) {
         <Rating value={item.rating}></Rating>
         <p>{formatDate(item.createdAt)}</p>
         <p>{item.content}</p>
+        <button onClick={handleEditClick}>수정</button>
         <button onClick={handleDeleteClick}>삭제</button>
       </div>
     </div>
@@ -25,12 +31,33 @@ function ReviewListItem({ item, onDelete }) {
 }
 
 export default function ReviewList({ items, onDelete }) {
+  const [editingId, setEditingId] = useState(null);
+
+  const handleCancel = () => setEditingId(null);
+
   return (
     <ul>
       {items.map((item) => {
+        if (item.id === editingId) {
+          const { imgUrl, title, rating, content } = item;
+          const initialValues = { title, rating, content };
+          return (
+            <li key={item.id}>
+              <ReviewForm
+                initialValues={initialValues}
+                initialPreview={imgUrl}
+                onCancel={handleCancel}
+              ></ReviewForm>
+            </li>
+          );
+        }
         return (
           <li key={item.id}>
-            <ReviewListItem item={item} onDelete={onDelete}></ReviewListItem>
+            <ReviewListItem
+              item={item}
+              onDelete={onDelete}
+              onEdit={setEditingId}
+            ></ReviewListItem>
           </li>
         );
       })}
