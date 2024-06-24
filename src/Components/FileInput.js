@@ -28,7 +28,7 @@ export default function FileInput({ name, value, initialPreview, onChange }) {
       setPreview(initialPreview);
       URL.revokeObjectURL(nextPreview);
     };
-  }, [value]);
+  }, [value, initialPreview]);
 
   return (
     <div>

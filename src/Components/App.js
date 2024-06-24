@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ReviewList from "./ReviewList";
-import { getReviews } from "../Api";
+
+import { deleteReview, getReviews } from "../Api";
 import ReviewForm from "./ReviewForm";
 
 const LIMIT = 6;
@@ -18,9 +19,11 @@ export default function App() {
   const handleNewestClick = () => setOrder("createdAt");
   const handleBestClick = () => setOrder("rating");
 
-  const handleDelete = (id) => {
-    const nextItems = items.filter((item) => item.id !== id);
-    setItems(nextItems);
+  const handleDelete = async (id) => {
+    const result = await deleteReview(id);
+    if (!result) return;
+
+    setItems((prevItems) => prevItems.filter((item) => item.id !== id));
   };
 
   const handleLoad = async (options) => {
@@ -49,8 +52,19 @@ export default function App() {
     await handleLoad({ order, offset, limit: LIMIT });
   };
 
-  const handleSubmitSuccess = (review) => {
+  const handleCreateSuccess = (review) => {
     setItems((prevItems) => [review, ...prevItems]);
+  };
+
+  const handleUpdateSuccess = (review) => {
+    setItems((prevItems) => {
+      const splitIdx = prevItems.findIndex((item) => item.id === review.id);
+      return [
+        ...prevItems.slice(0, splitIdx),
+        review,
+        ...prevItems.slice(splitIdx + 1),
+      ];
+    });
   };
 
   useEffect(() => {
@@ -63,8 +77,15 @@ export default function App() {
         <button onClick={handleNewestClick}>최신순</button>
         <button onClick={handleBestClick}>베스트순</button>
       </div>
-      <ReviewForm onSubmitSuccess={handleSubmitSuccess}></ReviewForm>
-      <ReviewList items={sortedItems} onDelete={handleDelete}></ReviewList>
+      <ReviewForm
+        onSubmit={createReview}
+        onSubmitSuccess={handleCreateSuccess}
+      ></ReviewForm>
+      <ReviewList
+        items={sortedItems}
+        onDelete={handleDelete}
+        onUpdateSuccess={handleUpdateSuccess}
+      ></ReviewList>
       {hasNext && (
         <button disabled={isLoading} onClick={handleLoadMore}>
           더 보기
