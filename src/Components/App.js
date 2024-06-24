@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ReviewList from "./ReviewList";
 
-import { deleteReview, getReviews } from "../Api";
+import { deleteReview, getReview, createReview } from "../Api";
 import ReviewForm from "./ReviewForm";
 
 const LIMIT = 6;
@@ -31,7 +31,7 @@ export default function App() {
     try {
       setIsLoading(true);
       setLoadingError(null);
-      result = await getReviews(options);
+      result = await getReview(options);
     } catch (error) {
       setLoadingError(error);
       return;

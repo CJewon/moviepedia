@@ -1,6 +1,6 @@
 const BASE_URL = "https://learn.codeit.kr/6915";
 
-export async function getReviews({
+export async function getReview({
   order = "createdAt",
   offset = 0,
   limit = 0,
