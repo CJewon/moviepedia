@@ -33,5 +33,5 @@ export function useSetLocale() {
     throw new Error("반드시 LocaleProvider 안에서 사용해야 합니다");
   }
 
-  return context.setlocale;
+  return context.setLocale;
 }
